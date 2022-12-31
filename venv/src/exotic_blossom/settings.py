@@ -85,20 +85,21 @@ WSGI_APPLICATION = 'exotic_blossom.wsgi.application'
 # }
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'stockmgt',
-    #     'USER': 'Admin',
-    #     'PASSWORD': 'locco4jc',
-    # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'stockmgt',
         'USER': 'Admin',
-        'PASSWORD': '1234',
-        'HOST': '34.28.18.106',
-        'PORT': '3306',
+        'PASSWORD': 'locco4jc',
     }
+    # #Google test server
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'stockmgt',
+    #     'USER': 'Admin',
+    #     'PASSWORD': '1234',
+    #     'HOST': '34.28.18.106',
+    #     'PORT': '3306',
+    # }
 }
 
 # Password validation

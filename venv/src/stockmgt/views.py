@@ -2,11 +2,11 @@ from django.shortcuts import render
 from .models import *
 from .forms import *
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 import csv
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
+from .serializers import StockSerializer
 # Create your views here.
 
 
@@ -15,43 +15,46 @@ def home(request):
     context = {
         "title": title,
     }
-    return redirect('/list_item')
+    return redirect('/list_item') 
     # return render(request, "home.html", context)
 
 
 @login_required
 def list_item(request):
-    form = StockSearchForm(request.POST or None)
-    title = 'List of Items'
-    queryset = Stock.objects.all()
-    context = {
-        "form": form,
-        "title": title,
-        "queryset": queryset,
-    }
-    if request.method == 'POST':
-        category = form['category'].value()
-        queryset = StockHistory.objects.filter(
-            item_name__icontains=form['item_name'].value()
-        )
-        if (category != ''):
-            queryset = queryset.filter(category_id=category)
-        if form['export_to_CSV'].value() == True:
-            response = HttpResponse(content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename="List of stock.csv"'
-            writer = csv.writer(response)
-            writer.writerow(['CATEGORY', 'ITEM NAME', 'QUANTITY'])
-            instance = queryset
-            for stock in instance:
-                writer.writerow(
-                    [stock.category, stock.item_name, stock.quantity])
-            return response
-        context = {
-            "form": form,
-            "title": title,
-            "queryset": queryset,
-        }
-    return render(request, "list_item.html", context)
+    stocks= Stock.objects.all()
+    serializer= StockSerializer(stocks,many=True)
+    return JsonResponse(serializer.data, safe=False)
+    # form = StockSearchForm(request.POST or None)
+    # title = 'List of Items'
+    # queryset = Stock.objects.all()
+    # context = {
+    #     "form": form,
+    #     "title": title,
+    #     "queryset": queryset,
+    # }
+    # if request.method == 'POST':
+    #     category = form['category'].value()
+    #     queryset = StockHistory.objects.filter(
+    #         item_name__icontains=form['item_name'].value()
+    #     )
+    #     if (category != ''):
+    #         queryset = queryset.filter(category_id=category)
+    #     if form['export_to_CSV'].value() == True:
+    #         response = HttpResponse(content_type='text/csv')
+    #         response['Content-Disposition'] = 'attachment; filename="List of stock.csv"'
+    #         writer = csv.writer(response)
+    #         writer.writerow(['CATEGORY', 'ITEM NAME', 'QUANTITY'])
+    #         instance = queryset
+    #         for stock in instance:
+    #             writer.writerow(
+    #                 [stock.category, stock.item_name, stock.quantity])
+    #         return response
+    #     context = {
+    #         "form": form,
+    #         "title": title,
+    #         "queryset": queryset,
+    #     }
+    # return render(request, "list_item.html", context)
 
 
 @login_required
