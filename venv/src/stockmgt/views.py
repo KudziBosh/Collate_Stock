@@ -7,6 +7,10 @@ import csv
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .serializers import StockSerializer
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+
 # Create your views here.
 
 
@@ -15,15 +19,16 @@ def home(request):
     context = {
         "title": title,
     }
-    return redirect('/list_item') 
+    return redirect('/list_item')
     # return render(request, "home.html", context)
 
 
 @login_required
+@api_view(['GET', 'POST'])
 def list_item(request):
-    stocks= Stock.objects.all()
-    serializer= StockSerializer(stocks,many=True)
-    return JsonResponse(serializer.data, safe=False)
+    stocks = Stock.objects.all()
+    serializer = StockSerializer(stocks, many=True)
+    return Response(serializer.data, status=status.HTTP_302_FOUND)
     # form = StockSearchForm(request.POST or None)
     # title = 'List of Items'
     # queryset = Stock.objects.all()
@@ -58,52 +63,75 @@ def list_item(request):
 
 
 @login_required
+@api_view(['GET', 'POST'])
 def add_items(request):
-    form = StockCreateForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        messages.success(request, 'Successfully Saved')
-        return redirect('/list_item')
+    # form = StockCreateForm(request.POST or None)
+    # if form.is_valid():
+    #     form.save()
+    #     messages.success(request, 'Successfully Saved')
+    #     return redirect('/list_item')
 
-    context = {
-        "form": form,
-        "title": "Add Item",
-    }
-    return render(request, "add_item.html", context)
+    # context = {
+    #     "form": form,
+    #     "title": "Add Item",
+    # }
+    # return render(request, "add_item.html", context)
+    if request.method == 'POST':
+        serializer = StockSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+@login_required
+@api_view(['GET', 'PUT','DELETE'])  
 def update_items(request, pk):
-    queryset = Stock.objects.get(id=pk)
-    form = StockUpdateForm(instance=queryset)
-    if request.method == 'POST':
-        form = StockUpdateForm(request.POST, instance=queryset)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Successfully Saved')
-            return redirect('/list_item')
+    # queryset = Stock.objects.get(id=pk)
+    # form = StockUpdateForm(instance=queryset)
+    # if request.method == 'POST':
+    #     form = StockUpdateForm(request.POST, instance=queryset)
+    #     if form.is_valid():
+    #         form.save()
+    #         messages.success(request, 'Successfully Saved')
+    #         return redirect('/list_item')
 
-    context = {
-        'form': form
-    }
-    return render(request, 'add_item.html', context)
+    # context = {
+    #     'form': form
+    # }
+    # return render(request, 'add_item.html', context)
+    try:
+        queryset = Stock.objects.get(id=pk)
+    except Stock.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-
-def delete_items(request, pk):
-    queryset = Stock.objects.get(id=pk)
-    if request.method == 'POST':
+    if request.method == 'GET':
+        serializer = StockSerializer(queryset)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = StockSerializer(queryset,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
         queryset.delete()
-        messages.success(request, 'Successfully Deleted')
-        return redirect('/list_item')
-    return render(request, 'delete_items.html')
+        return Response(status.status.HTTP_204_NO_CONTENT)
+
+
+# @login_required
+# def delete_items(request, pk):
+#     queryset = Stock.objects.get(id=pk)
+#     if request.method == 'POST':
+#         queryset.delete()
+#         messages.success(request, 'Successfully Deleted')
+#         return Response(status.status.HTTP_204_NO_CONTENT)
+#     return render(request, 'delete_items.html')
 
 
 def stock_detail(request, pk):
-    queryset = Stock.objects.get(id=pk)
-    context = {
-        # "title": queryset.item_name,
-        "queryset": queryset,
-    }
-    return render(request, "stock_detail.html", context)
+    if request.method == 'GET':
+        serializer = StockSerializer(queryset)
+        return Response(serializer.data)
 
 
 def issue_items(request, pk):
@@ -128,6 +156,13 @@ def issue_items(request, pk):
         "username": 'Issue By: ' + str(request.user),
     }
     return render(request, "add_item.html", context)
+
+def make_purchase(request,pk):
+     if request.method == 'POST':
+        serializer = StockSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 def receive_items(request, pk):
