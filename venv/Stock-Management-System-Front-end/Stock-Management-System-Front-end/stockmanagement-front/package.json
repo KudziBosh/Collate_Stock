@@ -56,7 +56,10 @@
     "webpack-dev-server": "^3"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack --mode production --env prod",
-    "start": "cross-env NODE_ENV=development webpack serve --mode development --progress"
+    "build": "cross-env NODE PORT=8000_ENV=production webpack --mode production --env prod",
+    "start": "cross-env PORT=8000 NODE_ENV=development webpack serve --mode development --progress"
+  },
+  "dependencies": {
+    "react-scripts": "^3.2.0"
   }
 }
