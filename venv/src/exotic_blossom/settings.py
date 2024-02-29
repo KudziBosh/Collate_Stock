@@ -77,20 +77,20 @@ WSGI_APPLICATION = 'exotic_blossom.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'stockmgt',
-        'USER': 'Admin',
-        'PASSWORD': 'locco4jc',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
+
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'stockmgt',
+    #     'USER': 'Admin',
+    #     'PASSWORD': 'locco4jc',
+    # }
     # #Google test server
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
@@ -100,7 +100,8 @@ DATABASES = {
     #     'HOST': '34.28.18.106',
     #     'PORT': '3306',
     # }
-}
+# }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

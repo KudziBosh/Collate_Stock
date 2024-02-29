@@ -26,7 +26,7 @@ th {
 	padding-left: 5px;
 	padding-right: 5px;
 	padding-bottom: 20px;
-	box-shadow: 12px 12px 20px 6px #2e6da4;
+  overflow-x: auto;
 }
 
 .header {
@@ -51,4 +51,17 @@ th {
 
 .btn btn-primary mybutton{
   width: 100%;
+}
+
+.col-sm-9{
+  position: relative;
+  bottom: 1350px;
+}
+
+.overview{
+  float: left;
+}
+
+.date{
+  float: left;
 }
